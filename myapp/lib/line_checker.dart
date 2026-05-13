@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img; 
+import 'package:image/image.dart' as img;
 
 class LineChecker {
   final String imagePath;
@@ -10,7 +13,11 @@ class LineChecker {
   Future<void> loadImage() async {
     final ByteData data = await rootBundle.load(imagePath);
     final List<int> bytes = data.buffer.asUint8List().toList();
-    _image = img.decodeImage(Uint8List.fromList(bytes));
+    final decodedImage = img.decodeImage(Uint8List.fromList(bytes));
+    if (decodedImage == null) {
+      throw FormatException('Unable to decode line image asset: $imagePath');
+    }
+    _image = decodedImage;
   }
 
   bool isInsideLines(Offset point) {
